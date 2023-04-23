@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "vacuumhopper",
+  "version": "${version}",
+
+  "name": "Vacuum Hopper",
+  "description": "Adds in the Vacuum Hopper from OpenBlocks.",
+  "authors": [
+    "Gitko / MrCrazyMan109"
+  ],
+  "contact": {
+    "homepage": "https://gitko01.github.io/",
+    "sources": "https://github.com/Gitko01/VacuumHopper"
+  },
+
+  "license": "Chace Pratt's Modified MIT License",
+  "icon": "assets/vacuumhopper/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.gitko.vacuumhopper.VacuumHopper"
+    ],
+    "client": [
+      "net.gitko.vacuumhopper.client.VacuumHopperClient"
+    ]
+  },
+  "mixins": [
+    "vacuumhopper.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.10",
+    "fabric-api": "*",
+    "minecraft": "~1.19",
+    "java": ">=17"
+  }
+}

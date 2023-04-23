@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.gitko.vacuumhopper.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+  ],
+  "client": [
+    "VacuumHopperMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

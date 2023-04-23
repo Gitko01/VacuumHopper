@@ -1,0 +1,30 @@
+{
+  "itemGroup.vacuumhopper.tab": "Vacuum Hopper",
+
+  "block.vacuumhopper.vacuum_hopper": "Vacuum Hopper",
+
+  "item.vacuumhopper.vacuum_screwdriver": "Vacuum Screwdriver",
+  "item.vacuumhopper.vacuum_filter": "Vacuum Filter",
+
+  "tooltip.vacuumhopper.hold_shift": "Hold §3SHIFT§r for more information",
+
+  "tooltip.vacuumhopper.vacuum_hopper_1": "A hopper that sucks up items ",
+  "tooltip.vacuumhopper.vacuum_hopper_2": "off of the ground ",
+  "tooltip.vacuumhopper.vacuum_hopper_3": "with a configurable range.",
+  "tooltip.vacuumhopper.vacuum_hopper_4": "§c§lBeware!§r§l Recipe stolen from Dyson.",
+  "tooltip.vacuumhopper.vacuum_screwdriver_1": "Used to configure the ",
+  "tooltip.vacuumhopper.vacuum_screwdriver_2": "IO of vacuum hoppers.",
+  "tooltip.vacuumhopper.vacuum_screwdriver_3": "§lFamiliar colors...",
+  "tooltip.vacuumhopper.vacuum_filter_1": "Filters out certain items ",
+  "tooltip.vacuumhopper.vacuum_filter_2": "for vacuum hoppers.",
+  "tooltip.vacuumhopper.vacuum_filter_3": "§lH13 certified!",
+
+  "gui.vacuumhopper.vacuum_hopper.rangeSlider": "Range: ",
+  "gui.vacuumhopper.vacuum_hopper.redstoneMode.0": "Ignoring redstone",
+  "gui.vacuumhopper.vacuum_hopper.redstoneMode.1": "Active if redstone active",
+  "gui.vacuumhopper.vacuum_hopper.redstoneMode.2": "Active if redstone inactive",
+  "gui.vacuumhopper.vacuum_hopper.pushMode.0": "Not pushing items to outputs",
+  "gui.vacuumhopper.vacuum_hopper.pushMode.1": "Pushing items to outputs",
+  "gui.vacuumhopper.vacuum_filter.mode.0": "Whitelist",
+  "gui.vacuumhopper.vacuum_filter.mode.1": "Blacklist"
+}

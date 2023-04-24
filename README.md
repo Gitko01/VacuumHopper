@@ -17,7 +17,7 @@ There are a couple places you can download this mod from.
 - Initial release
 
 # Wiki
-Not here quite yet!
+[https://gitko01.github.io/vacuumhopper_wiki/index.html](https://gitko01.github.io/vacuumhopper_wiki/index.html)
 
 # Bugs
 Please report all bugs to this GitHub repo's issues section.

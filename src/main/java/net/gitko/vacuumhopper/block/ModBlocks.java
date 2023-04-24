@@ -1,7 +1,6 @@
 package net.gitko.vacuumhopper.block;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.gitko.vacuumhopper.VacuumHopper;
@@ -17,10 +16,9 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,11 +34,11 @@ public class ModBlocks {
     // Registry stuff
     private static Block registerBlock(String name, Block block, ItemGroup group, String tooltipKey, Integer tooltipLineAmount, Boolean holdDownShift) {
         registerBlockItem(name, block, group, tooltipKey, tooltipLineAmount, holdDownShift);
-        return Registry.register(Registries.BLOCK, new Identifier(VacuumHopper.MOD_ID, name), block);
+        return Registry.register(Registry.BLOCK, new Identifier(VacuumHopper.MOD_ID, name), block);
     }
 
     private static Item registerBlockItem(String name, Block block, ItemGroup group, String tooltipKey, Integer tooltipLineAmount, Boolean holdDownShift) {
-        BlockItem item = new BlockItem(block, new FabricItemSettings()) {
+        BlockItem item = new BlockItem(block, new FabricItemSettings().group(group)) {
             @Override
             public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
                 if (holdDownShift) {
@@ -64,22 +62,19 @@ public class ModBlocks {
                 }
             }
         };
-        ItemGroupEvents.modifyEntriesEvent(group).register(entries -> entries.add(item));
-
-        return Registry.register(Registries.ITEM, new Identifier(VacuumHopper.MOD_ID, name),
+        return Registry.register(Registry.ITEM, new Identifier(VacuumHopper.MOD_ID, name),
                item);
     }
 
     private static Block registerBlock(String name, Block block, ItemGroup group) {
         registerBlockItem(name, block, group);
-        return Registry.register(Registries.BLOCK, new Identifier(VacuumHopper.MOD_ID, name), block);
+        return Registry.register(Registry.BLOCK, new Identifier(VacuumHopper.MOD_ID, name), block);
     }
 
     private static Item registerBlockItem(String name, Block block, ItemGroup group) {
-        BlockItem item = new BlockItem(block, new FabricItemSettings());
-        ItemGroupEvents.modifyEntriesEvent(group).register(entries -> entries.add(item));
+        BlockItem item = new BlockItem(block, new FabricItemSettings().group(group));
 
-        return Registry.register(Registries.ITEM, new Identifier(VacuumHopper.MOD_ID, name),
+        return Registry.register(Registry.ITEM, new Identifier(VacuumHopper.MOD_ID, name),
                 item);
     }
 
@@ -94,7 +89,7 @@ public class ModBlocks {
                 ), ModItemGroup.TAB, "tooltip." + VacuumHopper.MOD_ID + ".vacuum_hopper", 4, true);
 
         VACUUM_HOPPER_BLOCK_ENTITY = Registry.register(
-                Registries.BLOCK_ENTITY_TYPE,
+                Registry.BLOCK_ENTITY_TYPE,
                 new Identifier(VacuumHopper.MOD_ID, "vacuum_hopper_block_entity"),
                 FabricBlockEntityTypeBuilder.create(VacuumHopperBlockEntity::new, VACUUM_HOPPER).build()
         );

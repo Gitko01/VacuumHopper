@@ -6,10 +6,9 @@ import net.gitko.vacuumhopper.block.ModBlocks;
 import net.gitko.vacuumhopper.gui.VacuumFilterScreenHandler;
 import net.gitko.vacuumhopper.gui.VacuumHopperScreenHandler;
 import net.gitko.vacuumhopper.item.ModItems;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +24,8 @@ public class VacuumHopper implements ModInitializer {
 	public void onInitialize() {
 		ModBlocks.register();
 		ModItems.register();
-		Registry.register(Registries.SCREEN_HANDLER, new Identifier("vacuum_hopper_screen_handler"), VACUUM_HOPPER_SCREEN_HANDLER);
-		Registry.register(Registries.SCREEN_HANDLER, new Identifier("vacuum_filter_screen_handler"), VACUUM_FILTER_SCREEN_HANDLER);
+		Registry.register(Registry.SCREEN_HANDLER, new Identifier("vacuum_hopper_screen_handler"), VACUUM_HOPPER_SCREEN_HANDLER);
+		Registry.register(Registry.SCREEN_HANDLER, new Identifier("vacuum_filter_screen_handler"), VACUUM_FILTER_SCREEN_HANDLER);
 
 		LOGGER.info("[Vacuum Hopper] Mod initialized.");
 	}

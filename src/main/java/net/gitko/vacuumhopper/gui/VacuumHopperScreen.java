@@ -9,7 +9,6 @@ import net.gitko.vacuumhopper.VacuumHopper;
 import net.gitko.vacuumhopper.block.custom.VacuumHopperBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.render.GameRenderer;
@@ -49,7 +48,7 @@ public class VacuumHopperScreen extends HandledScreen<VacuumHopperScreenHandler>
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int x = (width - backgroundWidth) / 2;
@@ -62,13 +61,6 @@ public class VacuumHopperScreen extends HandledScreen<VacuumHopperScreenHandler>
         renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         drawMouseoverTooltip(matrices, mouseX, mouseY);
-
-        if (redstoneModeButton != null) {
-            redstoneModeButton.setTooltip(Tooltip.of(Text.translatable("gui." + VacuumHopper.MOD_ID + ".vacuum_hopper.redstoneMode." + redstoneMode)));
-        }
-        if (pushModeButton != null) {
-            pushModeButton.setTooltip(Tooltip.of(Text.translatable("gui." + VacuumHopper.MOD_ID + ".vacuum_hopper.pushMode." + pushMode)));
-        }
     }
 
     @Override
@@ -95,7 +87,9 @@ public class VacuumHopperScreen extends HandledScreen<VacuumHopperScreenHandler>
             }
 
             redstoneModeButton = this.addDrawableChild(createRedstoneModeWidget(
-                    x, y, 8, 20, 16, 16, u, v, 0, TEXTURE, 256, 256, ButtonWidget::onPress, Tooltip.of(Text.translatable("gui." + VacuumHopper.MOD_ID + ".vacuum_hopper.redstoneMode." + redstoneMode)), Text.literal(""), client));
+                    x, y, 8, 20, 16, 16, u, v, 0, TEXTURE, 256, 256, ButtonWidget::onPress,
+                    (button, matrices, mouseX, mouseY) -> renderTooltip(matrices, Text.translatable("gui." + VacuumHopper.MOD_ID + ".vacuum_hopper.redstoneMode." + redstoneMode), mouseX, mouseY),
+                    Text.literal(""), client));
         }
 
         // Create push mode button
@@ -113,7 +107,9 @@ public class VacuumHopperScreen extends HandledScreen<VacuumHopperScreenHandler>
             }
 
             pushModeButton = this.addDrawableChild(createPushModeWidget(
-                    x, y, 8, 39, 32, 16, u, v, 0, TEXTURE, 256, 256, ButtonWidget::onPress, Tooltip.of(Text.translatable("gui." + VacuumHopper.MOD_ID + ".vacuum_hopper.pushMode." + pushMode)), Text.literal(""), client));
+                    x, y, 8, 39, 32, 16, u, v, 0, TEXTURE, 256, 256, ButtonWidget::onPress,
+                    (button, matrices, mouseX, mouseY) -> renderTooltip(matrices, Text.translatable("gui." + VacuumHopper.MOD_ID + ".vacuum_hopper.pushMode." + pushMode), mouseX, mouseY),
+                    Text.literal(""), client));
         }
 
         // Create range slider
@@ -136,8 +132,8 @@ public class VacuumHopperScreen extends HandledScreen<VacuumHopperScreenHandler>
         }
     }
 
-    public CustomTexturedButtonWidget createRedstoneModeWidget(int x, int y, int xMargin, int yMargin, int width, int height, int u, int v, int hoveredVOffset, Identifier guiTexture, int guiTextureWidth, int guiTextureHeight, ButtonWidget.PressAction pressAction, Tooltip tooltip, Text text, MinecraftClient client) {
-        CustomTexturedButtonWidget buttonWidget = new CustomTexturedButtonWidget(x + xMargin, y + yMargin, width, height, u, v, hoveredVOffset, guiTexture, guiTextureWidth, guiTextureHeight, pressAction, text) {
+    public CustomTexturedButtonWidget createRedstoneModeWidget(int x, int y, int xMargin, int yMargin, int width, int height, int u, int v, int hoveredVOffset, Identifier guiTexture, int guiTextureWidth, int guiTextureHeight, ButtonWidget.PressAction pressAction, ButtonWidget.TooltipSupplier tooltipSupplier, Text text, MinecraftClient client) {
+        CustomTexturedButtonWidget buttonWidget = new CustomTexturedButtonWidget(x + xMargin, y + yMargin, width, height, u, v, hoveredVOffset, guiTexture, guiTextureWidth, guiTextureHeight, pressAction, tooltipSupplier, text) {
             @Override
             public void onPress() {
                 if (redstoneMode == 2) {
@@ -159,12 +155,11 @@ public class VacuumHopperScreen extends HandledScreen<VacuumHopperScreenHandler>
                 updateRedstoneMode(redstoneMode, client);
             }
         };
-        buttonWidget.setTooltip(tooltip);
         return buttonWidget;
     }
 
-    public CustomTexturedButtonWidget createPushModeWidget(int x, int y, int xMargin, int yMargin, int width, int height, int u, int v, int hoveredVOffset, Identifier guiTexture, int guiTextureWidth, int guiTextureHeight, ButtonWidget.PressAction pressAction, Tooltip tooltip, Text text, MinecraftClient client) {
-        CustomTexturedButtonWidget buttonWidget = new CustomTexturedButtonWidget(x + xMargin, y + yMargin, width, height, u, v, hoveredVOffset, guiTexture, guiTextureWidth, guiTextureHeight, pressAction, text) {
+    public CustomTexturedButtonWidget createPushModeWidget(int x, int y, int xMargin, int yMargin, int width, int height, int u, int v, int hoveredVOffset, Identifier guiTexture, int guiTextureWidth, int guiTextureHeight, ButtonWidget.PressAction pressAction, ButtonWidget.TooltipSupplier tooltipSupplier, Text text, MinecraftClient client) {
+        CustomTexturedButtonWidget buttonWidget = new CustomTexturedButtonWidget(x + xMargin, y + yMargin, width, height, u, v, hoveredVOffset, guiTexture, guiTextureWidth, guiTextureHeight, pressAction, tooltipSupplier, text) {
             @Override
             public void onPress() {
                 if (pushMode == 1) {
@@ -183,7 +178,6 @@ public class VacuumHopperScreen extends HandledScreen<VacuumHopperScreenHandler>
                 updatePushMode(pushMode, client);
             }
         };
-        buttonWidget.setTooltip(tooltip);
         return buttonWidget;
     }
 

@@ -46,9 +46,10 @@ import java.util.Objects;
 public class VacuumHopperBlockEntity extends BlockEntity implements ImplementedInventory, ExtendedScreenHandlerFactory, SidedInventory {
 
     private final DefaultedList<ItemEntity> detectedList = DefaultedList.ofSize(0);
-    public static final double SPEED = 0.05;
+    private final Hashtable<ItemEntity, Long> detectedListTimes = new Hashtable<>();
+    public static final double SPEED = 0.125;
     // 0.65 from center
-    private static final double INTAKE_RANGE = 0.65;
+    private static final double INTAKE_RANGE = 0.8;
     private static final double DISTANCE_MULTIPLIER = 3;
 
     // north, east, south, west, up, down
@@ -136,20 +137,50 @@ public class VacuumHopperBlockEntity extends BlockEntity implements ImplementedI
             try {
                 ItemEntity ie = be.getDetectedList().get(i);
 
-                //Vec3d itemPos = ie.getPos();
-                Vec3d itemPos = getCenterOfItemEntity(ie);
+                be.setDetectedListTimes(ie, be.getDetectedListTimes().get(ie) + 1);
 
-                Vec3d direction = itemPos.relativize(centerPos);
+                // If an item has been in the range for 30 seconds and still hasn't been sucked in, we will assume it is stuck
+                if (be.getDetectedListTimes().get(ie) >= 600) {
+                    boolean passedFilter = true;
 
-                double distance = centerPos.distanceTo(itemPos);
+                    // check filter
+                    Hashtable<Integer, Item> itemsToFilter;
+                    int vacuumFilterMode;
+                    ItemStack vacuumFilterStack = be.getStack(FILTER_SLOT_INDEX);
+                    if (!vacuumFilterStack.isEmpty() && vacuumFilterStack.getItem() == ModItems.VACUUM_FILTER) {
+                        itemsToFilter = VacuumFilterItem.getItemsToFilterFromNbtAsItems(vacuumFilterStack);
+                        vacuumFilterMode = VacuumFilterItem.getModeFromNbt(vacuumFilterStack);
 
-                // Designed to speed up item as it gets closer to the vacuum hopper
-                Vec3d velocity = new Vec3d(direction.getX() * SPEED / (distance * DISTANCE_MULTIPLIER), direction.getY() * SPEED / (distance * DISTANCE_MULTIPLIER), direction.getZ() * SPEED / (distance * DISTANCE_MULTIPLIER));
+                        if (vacuumFilterMode == 0) {
+                            if (!itemsToFilter.contains(ie.getStack().getItem())) passedFilter = false;
+                        } else {
+                            if (itemsToFilter.contains(ie.getStack().getItem())) passedFilter = false;
+                        }
+                    }
 
-                ie.addVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
+                    if (passedFilter) {
+                        ie.setNoGravity(false);
+                        be.removeFromDetectedList(ie);
+                        be.removeFromDetectedListTimes(ie);
 
-                if (!ie.hasNoGravity()) {
-                    ie.setNoGravity(true);
+                        be.addStack(ie);
+                    }
+                } else {
+                    //Vec3d itemPos = ie.getPos();
+                    Vec3d itemPos = getCenterOfItemEntity(ie);
+
+                    Vec3d direction = itemPos.relativize(centerPos);
+
+                    double distance = centerPos.distanceTo(itemPos);
+
+                    // Designed to speed up item as it gets closer to the vacuum hopper
+                    Vec3d velocity = new Vec3d(direction.getX() * SPEED / (distance * DISTANCE_MULTIPLIER), direction.getY() * SPEED / (distance * DISTANCE_MULTIPLIER), direction.getZ() * SPEED / (distance * DISTANCE_MULTIPLIER));
+
+                    ie.addVelocity(velocity.getX(), velocity.getY(), velocity.getZ());
+
+                    if (!ie.hasNoGravity()) {
+                        ie.setNoGravity(true);
+                    }
                 }
             } catch (Exception ignored) {}
         }
@@ -180,6 +211,7 @@ public class VacuumHopperBlockEntity extends BlockEntity implements ImplementedI
                             if ((!itemEntities.contains(ie) && !centerPos.isInRange(itemPos, reach + 1)) || ie.isRemoved()) {
                                 ie.setNoGravity(false);
                                 be.removeFromDetectedList(ie);
+                                be.removeFromDetectedListTimes(ie);
                             }
                         } catch (Exception ignored) {}
                     }
@@ -204,6 +236,7 @@ public class VacuumHopperBlockEntity extends BlockEntity implements ImplementedI
                         if (centerPos.isInRange(getCenterOfItemEntity(itemEntity), INTAKE_RANGE)) {
                             if (be.getDetectedList().contains(itemEntity)) {
                                 be.removeFromDetectedList(itemEntity);
+                                be.removeFromDetectedListTimes(itemEntity);
                                 itemEntity.setNoGravity(false);
                             }
 
@@ -212,6 +245,7 @@ public class VacuumHopperBlockEntity extends BlockEntity implements ImplementedI
                             // tell vacuum hopper to pull item
                             if (!be.getDetectedList().contains(itemEntity)) {
                                 be.addToDetectedList(itemEntity);
+                                be.setDetectedListTimes(itemEntity, 0L);
                             }
                         }
                     }
@@ -249,7 +283,7 @@ public class VacuumHopperBlockEntity extends BlockEntity implements ImplementedI
 
                     switch (directionNum) {
                         case 1 -> {
-                           direction = Direction.NORTH;
+                            direction = Direction.NORTH;
                         }
                         case 2 -> {
                             direction = Direction.EAST;
@@ -608,7 +642,7 @@ public class VacuumHopperBlockEntity extends BlockEntity implements ImplementedI
     }
 
     public DefaultedList<ItemEntity> getDetectedList() {
-        return detectedList;
+        return this.detectedList;
     }
 
     public void addToDetectedList(ItemEntity ie) {
@@ -619,6 +653,18 @@ public class VacuumHopperBlockEntity extends BlockEntity implements ImplementedI
 
     public void removeFromDetectedList(ItemEntity ie) {
         this.detectedList.remove(ie);
+    }
+
+    public Hashtable<ItemEntity, Long> getDetectedListTimes() {
+        return this.detectedListTimes;
+    }
+
+    public void setDetectedListTimes(ItemEntity ie, Long time) {
+        this.detectedListTimes.put(ie, time);
+    }
+
+    public void removeFromDetectedListTimes(ItemEntity ie) {
+        this.detectedListTimes.remove(ie);
     }
 
     public int getVacuumReach() {

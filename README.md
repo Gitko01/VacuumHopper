@@ -1,3 +1,6 @@
+# NO LONGER BEING UPDATED!
+# MERGED INTO THIS MOD: https://github.com/Gitko01/Hullabaloo  
+
 # Vacuum Hopper
 ![Mod icon](/src/main/resources/assets/vacuumhopper/icon.png "Mod icon")
 ### A Minecraft mod made using Fabric that adds in a remake of the vacuum hopper from OpenBlocks
